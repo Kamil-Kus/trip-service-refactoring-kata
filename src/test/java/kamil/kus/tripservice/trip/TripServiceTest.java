@@ -20,10 +20,9 @@ public class TripServiceTest {
     private static final Trip ITALY = new Trip();
 
     @Test
-
     public void should_throw_exception_when_user_is_not_logged() {
         //When
-        TestableService tripService = new TestableService(NOT_LOGGED_USER, TRIP_LIST);
+        TripService tripService = new TripService(new TestableDatabaseAdapter(TRIP_LIST), new TestableUserSessionAdapter(NOT_LOGGED_USER));
         //Given and Then
         assertThrows(UserNotLoggedInException.class, () -> tripService.getTripsByUser(USER_WITHOUT_FRIENDS));
     }
@@ -31,7 +30,7 @@ public class TripServiceTest {
     @Test
     public void should_return_empty_list_when_user_is_not_friend() {
         //When
-        TestableService tripService = new TestableService(LOGGED_USER, TRIP_LIST);
+        TripService tripService = new TripService(new TestableDatabaseAdapter(TRIP_LIST), new TestableUserSessionAdapter(LOGGED_USER));
         //Given
         final List<Trip> tripsByUser = tripService.getTripsByUser(USER_WITHOUT_FRIENDS);
         //Then
@@ -43,7 +42,7 @@ public class TripServiceTest {
         //When
         TRIP_LIST.add(ITALY);
         USER_WITH_FRIENDS.addFriend(LOGGED_USER);
-        TestableService tripService = new TestableService(LOGGED_USER, TRIP_LIST);
+        TripService tripService = new TripService(new TestableDatabaseAdapter(TRIP_LIST), new TestableUserSessionAdapter(LOGGED_USER));
         //Given
         final List<Trip> tripsByUser = tripService.getTripsByUser(USER_WITH_FRIENDS);
         //Then
@@ -51,22 +50,30 @@ public class TripServiceTest {
     }
 }
 
-class TestableService extends TripService {
-    private final User loggedUser;
+class TestableDatabaseAdapter extends DatabaseAdatper {
+
     private final List<Trip> tripList;
+
+    public TestableDatabaseAdapter(List<Trip> tripList) {
+        this.tripList = tripList;
+    }
+
+    @Override
+    public List<Trip> extractTripsByUser(User user) {
+        return tripList;
+    }
+}
+
+class TestableUserSessionAdapter extends UserSessionAdapter {
+
+    private final User user;
+
+    public TestableUserSessionAdapter(User user) {
+        this.user = user;
+    }
 
     @Override
     protected User getLoggedUser() {
-        return loggedUser;
-    }
-
-    @Override
-    protected List<Trip> extractTripsByUser(User user) {
-        return tripList;
-    }
-
-    public TestableService(User loggedUser, List<Trip> tripList) {
-        this.loggedUser = loggedUser;
-        this.tripList = tripList;
+        return user;
     }
 }

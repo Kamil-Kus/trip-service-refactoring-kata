@@ -5,13 +5,20 @@ import java.util.List;
 
 import kamil.kus.tripservice.exception.UserNotLoggedInException;
 import kamil.kus.tripservice.user.User;
-import kamil.kus.tripservice.user.UserSession;
 
 public class TripService {
 
+    private final DatabaseAdatper databaseAdatper;
+    private final UserSessionAdapter userSessionAdapter;
+
+    public TripService(DatabaseAdatper databaseAdatper, UserSessionAdapter userSessionAdapter) {
+        this.databaseAdatper = databaseAdatper;
+        this.userSessionAdapter = userSessionAdapter;
+    }
+
     public List<Trip> getTripsByUser(User user) throws UserNotLoggedInException {
         List<Trip> tripList = new ArrayList<Trip>();
-        User loggedUser = getLoggedUser();
+        User loggedUser = userSessionAdapter.getLoggedUser();
         boolean isFriend = false;
         if (loggedUser != null) {
             for (User friend : user.getFriends()) {
@@ -21,20 +28,11 @@ public class TripService {
                 }
             }
             if (isFriend) {
-                tripList = extractTripsByUser(user);
+                tripList = databaseAdatper.extractTripsByUser(user);
             }
             return tripList;
         } else {
             throw new UserNotLoggedInException();
         }
     }
-
-    protected List<Trip> extractTripsByUser(User user) {
-        return TripDAO.findTripsByUser(user);
-    }
-
-    protected User getLoggedUser() {
-        return UserSession.getInstance().getLoggedUser();
-    }
-
 }
