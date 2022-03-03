@@ -8,11 +8,11 @@ import kamil.kus.tripservice.user.User;
 
 public class TripService {
 
-    private final DatabaseAdatper databaseAdatper;
+    private final DatabaseAdapter databaseAdapter;
     private final UserSessionAdapter userSessionAdapter;
 
-    public TripService(DatabaseAdatper databaseAdatper, UserSessionAdapter userSessionAdapter) {
-        this.databaseAdatper = databaseAdatper;
+    public TripService(DatabaseAdapter databaseAdatper, UserSessionAdapter userSessionAdapter) {
+        this.databaseAdapter = databaseAdatper;
         this.userSessionAdapter = userSessionAdapter;
     }
 
@@ -28,7 +28,7 @@ public class TripService {
                 }
             }
             if (isFriend) {
-                tripList = databaseAdatper.extractTripsByUser(user);
+                tripList = databaseAdapter.extractTripsByUser(user);
             }
             return tripList;
         } else {

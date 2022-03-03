@@ -50,7 +50,7 @@ public class TripServiceTest {
     }
 }
 
-class TestableDatabaseAdapter extends DatabaseAdatper {
+class TestableDatabaseAdapter extends DatabaseAdapter {
 
     private final List<Trip> tripList;
 
